@@ -1,0 +1,337 @@
+{
+  "ok": true,
+  "totalFetched": 501,
+  "totalConstituents": 503,
+  "count": 20,
+  "benchmark": {
+    "symbol": "SPY",
+    "ytd": 8.86,
+    "price": 742.31
+  },
+  "winners": [
+    {
+      "symbol": "SNDK",
+      "name": "Sandisk",
+      "price": 1447.23,
+      "ytd": 509.67,
+      "sector": "Information Technology",
+      "subIndustry": "Technology Hardware, Storage & Peripherals"
+    },
+    {
+      "symbol": "INTC",
+      "name": "Intel",
+      "price": 120.29,
+      "ytd": 225.99,
+      "sector": "Information Technology",
+      "subIndustry": "Semiconductors"
+    },
+    {
+      "symbol": "STX",
+      "name": "Seagate Technology Holdings",
+      "price": 817.35,
+      "ytd": 196.8,
+      "sector": "Information Technology",
+      "subIndustry": "Technology Hardware, Storage & Peripherals"
+    },
+    {
+      "symbol": "WDC",
+      "name": "Western Digital",
+      "price": 494.09,
+      "ytd": 186.81,
+      "sector": "Information Technology",
+      "subIndustry": "Technology Hardware, Storage & Peripherals"
+    },
+    {
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "price": 803.63,
+      "ytd": 181.57,
+      "sector": "Information Technology",
+      "subIndustry": "Semiconductors"
+    },
+    {
+      "symbol": "LITE",
+      "name": "Lumentum Holdings",
+      "price": 1030.37,
+      "ytd": 179.54,
+      "sector": "Information Technology",
+      "subIndustry": "Communications Equipment"
+    },
+    {
+      "symbol": "CIEN",
+      "name": "Ciena",
+      "price": 577.9,
+      "ytd": 147.1,
+      "sector": "Information Technology",
+      "subIndustry": "Communications Equipment"
+    },
+    {
+      "symbol": "GLW",
+      "name": "Corning",
+      "price": 206.51,
+      "ytd": 135.85,
+      "sector": "Information Technology",
+      "subIndustry": "Electronic Components"
+    },
+    {
+      "symbol": "VRT",
+      "name": "Vertiv Holdings, LLC",
+      "price": 369.99,
+      "ytd": 128.37,
+      "sector": "Industrials",
+      "subIndustry": "Electrical Components & Equipment"
+    },
+    {
+      "symbol": "COHR",
+      "name": "Coherent",
+      "price": 403.71,
+      "ytd": 118.73,
+      "sector": "Information Technology",
+      "subIndustry": "Electronic Components"
+    },
+    {
+      "symbol": "FIX",
+      "name": "Comfort Systems USA",
+      "price": 2034.63,
+      "ytd": 118.01,
+      "sector": "Industrials",
+      "subIndustry": "Construction & Engineering"
+    },
+    {
+      "symbol": "ON",
+      "name": "ON Semiconductor",
+      "price": 115.71,
+      "ytd": 113.68,
+      "sector": "Information Technology",
+      "subIndustry": "Semiconductors"
+    },
+    {
+      "symbol": "AMD",
+      "name": "Advanced Micro Devices",
+      "price": 445.5,
+      "ytd": 108.02,
+      "sector": "Information Technology",
+      "subIndustry": "Semiconductors"
+    },
+    {
+      "symbol": "Q",
+      "name": "Qnity Electronics",
+      "price": 162.02,
+      "ytd": 98.43,
+      "sector": "Information Technology",
+      "subIndustry": "Semiconductor Materials & Equipment"
+    },
+    {
+      "symbol": "GNRC",
+      "name": "Generac Holdlings",
+      "price": 267.25,
+      "ytd": 95.97,
+      "sector": "Industrials",
+      "subIndustry": "Electrical Components & Equipment"
+    },
+    {
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "price": 243.87,
+      "ytd": 93.73,
+      "sector": "Information Technology",
+      "subIndustry": "Technology Hardware, Storage & Peripherals"
+    },
+    {
+      "symbol": "TER",
+      "name": "Teradyne",
+      "price": 363.38,
+      "ytd": 87.74,
+      "sector": "Information Technology",
+      "subIndustry": "Semiconductor Materials & Equipment"
+    },
+    {
+      "symbol": "AKAM",
+      "name": "Akamai Technologies",
+      "price": 161.14,
+      "ytd": 84.69,
+      "sector": "Information Technology",
+      "subIndustry": "Internet Services & Infrastructure"
+    },
+    {
+      "symbol": "PWR",
+      "name": "Quanta Services",
+      "price": 773.72,
+      "ytd": 83.32,
+      "sector": "Industrials",
+      "subIndustry": "Construction & Engineering"
+    },
+    {
+      "symbol": "MPWR",
+      "name": "Monolithic Power Systems",
+      "price": 1650.35,
+      "ytd": 82.09,
+      "sector": "Information Technology",
+      "subIndustry": "Semiconductors"
+    }
+  ],
+  "losers": [
+    {
+      "symbol": "EPAM",
+      "name": "EPAM Systems",
+      "price": 90.39,
+      "ytd": -55.88,
+      "sector": "Information Technology",
+      "subIndustry": "IT Consulting & Other Services"
+    },
+    {
+      "symbol": "CSGP",
+      "name": "CoStar Group",
+      "price": 31.97,
+      "ytd": -52.45,
+      "sector": "Real Estate",
+      "subIndustry": "Real Estate Services"
+    },
+    {
+      "symbol": "PODD",
+      "name": "Insulet",
+      "price": 148.84,
+      "ytd": -47.64,
+      "sector": "Health Care",
+      "subIndustry": "Health Care Equipment"
+    },
+    {
+      "symbol": "TTD",
+      "name": "The Trade Desk",
+      "price": 20.49,
+      "ytd": -46.02,
+      "sector": "Communication Services",
+      "subIndustry": "Advertising"
+    },
+    {
+      "symbol": "WDAY",
+      "name": "Workday",
+      "price": 116.5,
+      "ytd": -45.76,
+      "sector": "Information Technology",
+      "subIndustry": "Application Software"
+    },
+    {
+      "symbol": "CTSH",
+      "name": "Cognizant Technology Solutions",
+      "price": 45.97,
+      "ytd": -44.61,
+      "sector": "Information Technology",
+      "subIndustry": "IT Consulting & Other Services"
+    },
+    {
+      "symbol": "BSX",
+      "name": "Boston Scientific",
+      "price": 53.06,
+      "ytd": -44.35,
+      "sector": "Health Care",
+      "subIndustry": "Health Care Equipment"
+    },
+    {
+      "symbol": "INTU",
+      "name": "Intuit",
+      "price": 371.71,
+      "ytd": -43.89,
+      "sector": "Information Technology",
+      "subIndustry": "Application Software"
+    },
+    {
+      "symbol": "NOW",
+      "name": "ServiceNow",
+      "price": 87.05,
+      "ytd": -43.18,
+      "sector": "Information Technology",
+      "subIndustry": "Systems Software"
+    },
+    {
+      "symbol": "IT",
+      "name": "Gartner",
+      "price": 144.46,
+      "ytd": -42.74,
+      "sector": "Information Technology",
+      "subIndustry": "IT Consulting & Other Services"
+    },
+    {
+      "symbol": "LULU",
+      "name": "lululemon athletica",
+      "price": 121.21,
+      "ytd": -41.67,
+      "sector": "Consumer Discretionary",
+      "subIndustry": "Apparel, Accessories & Luxury Goods"
+    },
+    {
+      "symbol": "ZTS",
+      "name": "Zoetis",
+      "price": 74.34,
+      "ytd": -40.92,
+      "sector": "Health Care",
+      "subIndustry": "Pharmaceuticals"
+    },
+    {
+      "symbol": "ACN",
+      "name": "Accenture",
+      "price": 159.64,
+      "ytd": -40.5,
+      "sector": "Information Technology",
+      "subIndustry": "IT Consulting & Other Services"
+    },
+    {
+      "symbol": "TSCO",
+      "name": "Tractor Supply",
+      "price": 29.85,
+      "ytd": -40.31,
+      "sector": "Consumer Discretionary",
+      "subIndustry": "Other Specialty Retail"
+    },
+    {
+      "symbol": "CRM",
+      "name": "Salesforce",
+      "price": 165.84,
+      "ytd": -37.4,
+      "sector": "Information Technology",
+      "subIndustry": "Application Software"
+    },
+    {
+      "symbol": "FICO",
+      "name": "Fair Isaac",
+      "price": 1064.64,
+      "ytd": -37.03,
+      "sector": "Information Technology",
+      "subIndustry": "Application Software"
+    },
+    {
+      "symbol": "FIS",
+      "name": "Fidelity National Information S",
+      "price": 42.6,
+      "ytd": -35.9,
+      "sector": "Financials",
+      "subIndustry": "Transaction & Payment Processing Services"
+    },
+    {
+      "symbol": "BR",
+      "name": "Broadridge Financial Solutions,",
+      "price": 143.93,
+      "ytd": -35.51,
+      "sector": "Industrials",
+      "subIndustry": "Data Processing & Outsourced Services"
+    },
+    {
+      "symbol": "TYL",
+      "name": "Tyler Technologies",
+      "price": 298.59,
+      "ytd": -34.22,
+      "sector": "Information Technology",
+      "subIndustry": "Application Software"
+    },
+    {
+      "symbol": "DASH",
+      "name": "DoorDash",
+      "price": 149.07,
+      "ytd": -34.18,
+      "sector": "Consumer Discretionary",
+      "subIndustry": "Specialized Consumer Services"
+    }
+  ],
+  "updatedAt": "2026-05-14T00:06:23.356Z",
+  "year": 2026
+}

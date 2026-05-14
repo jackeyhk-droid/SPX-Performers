@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>S&P 500 — YTD Best & Worst Performers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg-terminal:#0E1117;--bg-panel:#161A22;--bg-header:#1F242F;
+    --border-section:#30363D;--border-subtle:#21262D;
+    --text-bright:#F0F3F6;--text-secondary:#C9D1D9;--text-header:#8B949E;
+    --text-muted:#8B949E;--text-dim:#6E7681;
+    --green-strong:#10B981;--green-mid:#047857;--green-subtle:#064E3B;
+    --red-strong:#F43F5E;--red-mid:#BE123C;--red-subtle:#4C0519;
+    --neutral:#2D333B;--accent-blue:#58A6FF;--gold:#F0B429;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-track{background:var(--bg-terminal)}
+  ::-webkit-scrollbar-thumb{background:var(--border-section);border-radius:4px}
+  *{scrollbar-width:thin;scrollbar-color:var(--border-section) var(--bg-terminal)}
+  body{background:var(--bg-terminal);color:var(--text-bright);font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;line-height:1.5}
+  .dashboard-header,.controls,.content,.footer{padding-left:max(28px,calc((100vw - 1384px)/2));padding-right:max(28px,calc((100vw - 1384px)/2))}
+
+  /* ── Header ──────────────────────────── */
+  .dashboard-header{background:var(--bg-panel);border-bottom:1px solid var(--border-subtle);padding-top:18px;padding-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}
+  .header-left{display:flex;flex-direction:column;gap:3px}
+  .header-tag{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;letter-spacing:.5px;background:linear-gradient(90deg,#E8A838,#D4A03C,#A8B44C,#6CC4A0,#58A6FF);background-size:200% auto;color:transparent;-webkit-background-clip:text;background-clip:text;animation:gradientFlow 4s ease-in-out infinite alternate}
+  @keyframes gradientFlow{0%{background-position:0% center}100%{background-position:100% center}}
+  .header-sub{font-size:12px;color:var(--text-muted)}
+  .header-right{display:flex;align-items:center;gap:14px}
+  .header-right .meta{font-size:11px;color:var(--text-muted);text-align:right;line-height:1.6}
+  .header-right .meta span{color:var(--text-secondary)}
+  .status-dot{width:7px;height:7px;border-radius:50%;background:var(--green-strong);display:inline-block;box-shadow:0 0 6px rgba(16,185,129,.5);animation:pulse 2.5s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+  /* ── Controls ────────────────────────── */
+  .controls{padding-top:10px;padding-bottom:10px;display:flex;gap:4px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--border-subtle);background:var(--bg-terminal)}
+  .tab-btn{border:none;background:transparent;color:var(--text-header);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:7px 14px;border-radius:6px;cursor:pointer;transition:all .15s ease}
+  .tab-btn:hover{background:rgba(255,255,255,.04);color:var(--text-secondary)}
+  .tab-btn.active{background:var(--border-section);color:var(--text-bright);font-weight:600}
+  .controls .sep{width:1px;height:20px;background:var(--border-section);margin:0 6px}
+  .filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-left:auto}
+  .search-input{background:var(--bg-panel);border:1px solid var(--border-section);color:var(--text-bright);font-family:'Inter',sans-serif;font-size:12px;padding:6px 12px;border-radius:6px;width:160px;outline:none;transition:border-color .15s}
+  .search-input::placeholder{color:var(--text-dim)}
+  .search-input:focus{border-color:var(--accent-blue)}
+  .sector-select{background:var(--bg-panel);border:1px solid var(--border-section);color:var(--text-secondary);font-family:'Inter',sans-serif;font-size:12px;padding:6px 10px;border-radius:6px;outline:none;cursor:pointer;max-width:180px}
+  .sector-select option{background:var(--bg-panel);color:var(--text-bright)}
+
+  /* ── Content ─────────────────────────── */
+  .content{padding-top:20px;padding-bottom:40px}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  .content.side-by-side{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  /* Compact mode in side-by-side */
+  .content.side-by-side .company{display:none}
+  .content.side-by-side table{font-size:12px}
+  .content.side-by-side .ytd-bar-wrap{width:50px}
+  .content.side-by-side tbody td{padding:8px 8px}
+  @media(max-width:1200px){.content.side-by-side{grid-template-columns:1fr}.content.side-by-side .company{display:table-cell}}
+
+  .panel{display:none;background:var(--bg-panel);border:1px solid var(--border-section);border-radius:10px;box-shadow:0 4px 12px -2px rgba(0,0,0,.4),0 1px 3px rgba(0,0,0,.2);overflow:hidden}
+  .panel.active{display:block;animation:fadeIn .25s ease-out forwards}
+
+  .panel-header{display:flex;align-items:center;gap:10px;padding:14px 20px 12px;border-bottom:1px solid var(--border-section);flex-wrap:wrap}
+  .panel-header .title{font-size:17px;font-weight:800;letter-spacing:-.3px}
+  .panel-header .badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:4px;border:1px solid var(--border-section)}
+  .panel-header .title.green{color:var(--green-strong)}
+  .panel-header .title.red{color:var(--red-strong)}
+  .panel-header .count{font-size:11px;color:var(--text-dim);margin-left:auto}
+  /* Sector distribution pills */
+  .sector-dist{display:flex;gap:6px;flex-wrap:wrap;width:100%;margin-top:6px}
+  .sector-pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--neutral);color:var(--text-secondary);white-space:nowrap}
+  .sector-pill.clickable{cursor:pointer;transition:background .12s,color .12s}
+  .sector-pill.clickable:hover{background:var(--border-section);color:var(--text-bright)}
+  .sector-pill.clickable.active-filter{background:var(--accent-blue);color:#fff}
+  .sector-pill .n{color:var(--accent-blue);margin-left:3px}
+
+  /* ── Table ───────────────────────────── */
+  .table-scroll{overflow-x:auto;position:relative}
+  /* Scroll hint — absolutely positioned overlay */
+  .table-scroll .scroll-hint{position:absolute;right:0;top:0;bottom:0;width:24px;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(14,17,23,.8));z-index:3;transition:opacity .2s}
+  .table-scroll.scrolled-end .scroll-hint{opacity:0}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead th{background:var(--bg-header);color:var(--text-header);font-family:'Inter',sans-serif;font-weight:600;font-size:11px;padding:9px 12px;text-align:left;position:sticky;top:0;z-index:2;border-bottom:1px solid var(--border-section);text-transform:uppercase;letter-spacing:.5px;cursor:pointer;user-select:none;white-space:nowrap;transition:color .12s}
+  thead th:hover{color:var(--text-bright)}
+  thead th .sort-arrow{font-size:9px;margin-left:3px;opacity:.4}
+  thead th.sorted .sort-arrow{opacity:1;color:var(--accent-blue)}
+  thead th:last-child{text-align:right}
+  thead th.center{text-align:center}
+
+  tbody td{padding:10px 12px;font-weight:500;border-bottom:1px solid var(--border-subtle);transition:background .1s ease}
+  tbody tr:hover td{background:rgba(255,255,255,.02)}
+  tbody tr.hidden{display:none}
+
+  .rank{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:14px;width:36px;text-align:center}
+  .rank.top3{font-size:16px}
+  .ticker{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:var(--accent-blue);white-space:nowrap;width:64px}
+  .company{color:var(--text-secondary);font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sector{color:var(--text-muted);font-size:11px;white-space:nowrap}
+  .price{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:12px;color:var(--text-secondary);text-align:right;white-space:nowrap}
+  .ytd-cell{text-align:right;white-space:nowrap}
+  .ytd-value{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;display:inline-block;min-width:64px;text-align:right}
+  .ytd-bar-wrap{display:inline-block;width:80px;height:12px;background:var(--neutral);border-radius:3px;vertical-align:middle;margin-left:6px;overflow:hidden}
+  .ytd-bar{display:block;height:100%;border-radius:3px;min-width:2px;transform-origin:left center;transform:scaleX(0)}
+  .ytd-bar.animate{animation:growBar 0.8s cubic-bezier(0.22,1,0.36,1) forwards}
+  @keyframes growBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  .ytd-bar.green{background:linear-gradient(90deg,var(--green-mid),var(--green-strong))}
+  .ytd-bar.red{background:linear-gradient(270deg,var(--red-mid),var(--red-strong));transform-origin:right center}
+
+  .no-results{padding:32px;text-align:center;color:var(--text-dim);font-size:13px;display:none}
+  .no-results.visible{display:block}
+
+  /* ── Footer ──────────────────────────── */
+  .footer{padding-top:14px;padding-bottom:14px;border-top:1px solid var(--border-subtle);font-size:11px;color:var(--text-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:16px}
+  .spinner{width:26px;height:26px;border:2px solid var(--border-section);border-top-color:var(--accent-blue);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading-state .msg{font-size:12px;color:var(--text-muted)}
+
+  @media(max-width:768px){
+    .dashboard-header,.controls,.content,.footer{padding-left:14px;padding-right:14px}
+    .company{max-width:120px}.ytd-bar-wrap{width:50px}.search-input{width:120px}
+    table{font-size:11px}tbody td{padding:8px 8px}
+    .filter-bar{margin-left:0;width:100%;margin-top:6px}
+  }
+</style>
+</head>
+<body>
+
+<header class="dashboard-header">
+  <div class="header-left">
+    <div class="header-tag">S&amp;P 500 — YTD PERFORMERS</div>
+    <div class="header-sub">Best &amp; Worst <span id="yearLabel"></span> Year-to-Date Returns</div>
+  </div>
+  <div class="header-right">
+    <div class="meta">
+      <div>Benchmark (SPY): <span id="benchmarkYtd" style="font-family:'JetBrains Mono',monospace;font-weight:700">—</span></div>
+      <div>Source: <span>Yahoo Finance (Adj Close)</span></div>
+      <div>Updated: <span id="updatedAt">—</span></div>
+      <div>Stocks fetched: <span id="stockCount">—</span></div>
+    </div>
+    <span class="status-dot" title="Live"></span>
+  </div>
+</header>
+
+<nav class="controls">
+  <button class="tab-btn active" data-tab="winners">🏆 Top 20</button>
+  <button class="tab-btn" data-tab="losers">📉 Bottom 20</button>
+  <div class="sep"></div>
+  <button class="tab-btn" data-tab="both">Side by Side</button>
+  <div class="sep"></div>
+  <button class="tab-btn" id="btn-export" style="color:var(--accent-blue)">↓ Export CSV</button>
+  <div class="filter-bar">
+    <input type="text" class="search-input" id="searchBox" placeholder="Search (Press /)" />
+    <select class="sector-select" id="sectorFilter"><option value="">All Sectors</option></select>
+    <button class="tab-btn" id="clearFilter" style="display:none;color:var(--red-strong);font-size:12px;padding:5px 10px">✕ Clear</button>
+  </div>
+</nav>
+
+<main class="content" id="content">
+  <div class="loading-state" id="loader">
+    <div class="spinner"></div>
+    <div class="msg">Fetching YTD returns for ~500 S&amp;P 500 stocks…</div>
+  </div>
+</main>
+
+<footer class="footer">
+  <span>S&amp;P 500 constituents (auto-updated) · YTD = (Current Price / Dec 31 Close − 1) × 100</span>
+  <span>Auto-refreshes hourly via Vercel Edge Cache</span>
+</footer>
+
+<script>
+const API_PATH = "/api/data?count=20";
+const STATIC_PATH = "/data.json";
+let winnersData = [], losersData = [];
+let currentSort = { winners: { col: 'ytd', dir: 'desc' }, losers: { col: 'ytd', dir: 'asc' } };
+
+// ─── Abbreviation helpers ─────────────────────────────
+function shortSector(s) {
+  return s.replace('Information Technology','IT').replace('Communication Services','Comm Svcs')
+    .replace('Consumer Discretionary','Cons Disc').replace('Consumer Staples','Cons Stap')
+    .replace('Health Care','Health').replace('Real Estate','RE');
+}
+function shortSub(s) {
+  return s.replace('Semiconductors & Semiconductor Equipment','Semis')
+    .replace('Semiconductors','Semis')
+    .replace('Technology Hardware, Storage & Peripherals','Hardware/Storage')
+    .replace('Application Software','App Software').replace('Systems Software','Sys Software')
+    .replace('Interactive Media & Services','Interactive Media')
+    .replace('Integrated Oil & Gas','Integrated O&G')
+    .replace('Oil & Gas Exploration & Production','E&P')
+    .replace('Diversified Banks','Banks').replace('Regional Banks','Regional Banks')
+    .replace('Investment Banking & Brokerage','IB/Brokerage')
+    .replace('Financial Exchanges & Data','Exchanges')
+    .replace('Aerospace & Defense','A&D')
+    .replace('Electrical Components & Equipment','Elec Equipment')
+    .replace('Industrial Machinery & Supplies & Components','Machinery')
+    .replace('Managed Health Care','Managed Care')
+    .replace('Life Sciences Tools & Services','Life Sci Tools')
+    .replace('Biotechnology','Biotech').replace('Pharmaceuticals','Pharma')
+    .replace(' & ',' & ');
+}
+
+// ─── Sector distribution (clickable pills) ──────────
+function sectorSummary(stocks) {
+  const counts = {};
+  const subMap = {}; // label → original subIndustry for filter matching
+  stocks.forEach(s => {
+    const label = s.sector && s.subIndustry
+      ? shortSector(s.sector) + ' / ' + shortSub(s.subIndustry)
+      : s.sector || 'Other';
+    counts[label] = (counts[label]||0) + 1;
+    if (s.subIndustry) subMap[label] = s.subIndustry;
+    else if (s.sector) subMap[label] = s.sector;
+  });
+  return Object.entries(counts).sort((a,b) => b[1]-a[1])
+    .map(([s,n]) => {
+      const raw = subMap[s] || s;
+      const filterVal = s.includes('/') ? 'sub:' + raw : 'sector:' + raw;
+      return `<span class="sector-pill clickable" data-filter="${filterVal}" title="Click to filter">${s}<span class="n">${n}</span></span>`;
+    }).join('');
+}
+
+// ─── Build Table ─────────────────────────────────────
+function buildTable(stocks, type) {
+  const isWinner = type === "winners";
+  // Use 90th percentile for bar scale to avoid one outlier crushing all others
+  const sortedAbs = stocks.map(s => Math.abs(s.ytd)).sort((a,b) => a-b);
+  const p90 = sortedAbs[Math.floor(sortedAbs.length * 0.9)] || sortedAbs[sortedAbs.length-1] || 1;
+  const maxBar = Math.max(p90 * 1.1, 1);
+
+  let html = `<div class="panel-header">
+    <span class="title ${isWinner ? 'green' : 'red'}">${isWinner ? '🏆 Top 20 Winners' : '📉 Bottom 20 Losers'}</span>
+    <span class="badge">${new Date().getFullYear()} YTD</span>
+    <span class="count" data-count-for="${type}">${stocks.length} stocks</span>
+    <div class="sector-dist">${sectorSummary(stocks)}</div>
+  </div>
+  <div class="table-scroll"><div class="scroll-hint"></div><table><thead><tr>
+    <th class="center" data-col="rank"># <span class="sort-arrow"></span></th>
+    <th data-col="symbol">Ticker <span class="sort-arrow"></span></th>
+    <th data-col="name">Company <span class="sort-arrow"></span></th>
+    <th data-col="sector">Sector <span class="sort-arrow"></span></th>
+    <th style="text-align:right" data-col="price">Price <span class="sort-arrow"></span></th>
+    <th style="text-align:right" data-col="ytd">YTD Return <span class="sort-arrow"></span></th>
+  </tr></thead><tbody>`;
+
+  stocks.forEach((s, i) => {
+    const rank = i + 1;
+    const color = s.ytd >= 0 ? "green" : "red";
+    const barW = Math.min(Math.abs(s.ytd) / maxBar * 100, 100);
+    const sign = s.ytd >= 0 ? "+" : "";
+    const rankClass = rank <= 3 ? " top3" : "";
+    const rankColor = isWinner
+      ? (rank === 1 ? "var(--gold)" : rank === 2 ? "#C0C0C0" : rank === 3 ? "#CD7F32" : "var(--text-dim)")
+      : "var(--text-dim)";
+
+    html += `<tr data-symbol="${s.symbol}" data-name="${(s.name||'').toLowerCase()}" data-sector="${s.sector||''}" data-sub="${s.subIndustry||''}">
+      <td class="rank${rankClass}" style="color:${rankColor}">${rank}</td>
+      <td class="ticker">${s.symbol}</td>
+      <td class="company" title="${s.name}">${s.name}</td>
+      <td class="sector" title="${s.sector}${s.subIndustry ? ' — '+s.subIndustry : ''}">${s.sector && s.subIndustry ? shortSector(s.sector) + ' / ' + shortSub(s.subIndustry) : s.sector || ''}</td>
+      <td class="price">$${s.price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
+      <td class="ytd-cell">
+        <span class="ytd-value" style="color:var(--${color}-strong)">${sign}${s.ytd.toFixed(1)}%</span>
+        <span class="ytd-bar-wrap"><span class="ytd-bar ${color}" style="width:${barW.toFixed(1)}%"></span></span>
+      </td>
+    </tr>`;
+  });
+
+  html += `</tbody></table></div><div class="no-results">No stocks matched your criteria.</div>`;
+  return html;
+}
+
+// ─── Sort ────────────────────────────────────────────
+function sortStocks(stocks, col, dir) {
+  const s = [...stocks];
+  s.sort((a, b) => {
+    let va = a[col], vb = b[col];
+    if (col === 'rank') { va = a.ytd; vb = b.ytd; }
+    if (typeof va === 'string') { va = (va||'').toLowerCase(); vb = (vb||'').toLowerCase(); }
+    if (va < vb) return dir === 'asc' ? -1 : 1;
+    if (va > vb) return dir === 'asc' ? 1 : -1;
+    return 0;
+  });
+  return s;
+}
+
+function attachSort(panelId, type) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+  panel.querySelectorAll('thead th[data-col]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      const sort = currentSort[type];
+      if (sort.col === col) sort.dir = sort.dir === 'asc' ? 'desc' : 'asc';
+      else { sort.col = col; sort.dir = col === 'ytd' || col === 'price' ? 'desc' : 'asc'; }
+      const data = type === 'winners' ? winnersData : losersData;
+      panel.innerHTML = buildTable(sortStocks(data, sort.col, sort.dir), type);
+      highlightSortCol(panelId, sort.col, sort.dir);
+      attachSort(panelId, type);
+      applyFilters();
+      initScrollHints();
+      requestAnimationFrame(animateBars);
+    });
+  });
+  highlightSortCol(panelId, currentSort[type].col, currentSort[type].dir);
+}
+
+function highlightSortCol(panelId, col, dir) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+  panel.querySelectorAll('thead th').forEach(th => {
+    th.classList.remove('sorted');
+    const a = th.querySelector('.sort-arrow'); if (a) a.textContent = '';
+  });
+  const active = panel.querySelector(`thead th[data-col="${col}"]`);
+  if (active) { active.classList.add('sorted'); const a = active.querySelector('.sort-arrow'); if (a) a.textContent = dir === 'asc' ? '↑' : '↓'; }
+}
+
+// ─── Filter ──────────────────────────────────────────
+function applyFilters() {
+  const query = (document.getElementById('searchBox')?.value || '').toLowerCase().trim();
+  const filterVal = document.getElementById('sectorFilter')?.value || '';
+
+  document.querySelectorAll('.panel').forEach(panel => {
+    let visible = 0;
+    panel.querySelectorAll('tbody tr').forEach(row => {
+      const sym = (row.dataset.symbol || '').toLowerCase();
+      const name = row.dataset.name || '';
+      const sec = row.dataset.sector || '';
+      const sub = row.dataset.sub || '';
+      const matchSearch = !query || sym.includes(query) || name.includes(query);
+      let matchSector = true;
+      if (filterVal.startsWith('sector:')) matchSector = sec === filterVal.slice(7);
+      else if (filterVal.startsWith('sub:')) matchSector = sub === filterVal.slice(4);
+      const show = matchSearch && matchSector;
+      row.classList.toggle('hidden', !show);
+      if (show) visible++;
+    });
+
+    const type = panel.id.replace('panel-', '');
+    const countEl = panel.querySelector(`[data-count-for="${type}"]`);
+    if (countEl) countEl.textContent = visible + ' stocks';
+    const noRes = panel.querySelector('.no-results');
+    if (noRes) noRes.classList.toggle('visible', visible === 0);
+  });
+}
+
+// ─── Scroll hint ─────────────────────────────────────
+function initScrollHints() {
+  document.querySelectorAll('.table-scroll').forEach(el => {
+    const check = () => {
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 5;
+      el.classList.toggle('scrolled-end', atEnd);
+    };
+    el.addEventListener('scroll', check);
+    check();
+  });
+}
+
+// ─── Tabs ────────────────────────────────────────────
+function initTabs() {
+  document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      const content = document.getElementById('content');
+      const tab = btn.dataset.tab;
+      if (tab === 'both') {
+        content.classList.add('side-by-side');
+        document.getElementById('panel-winners')?.classList.add('active');
+        document.getElementById('panel-losers')?.classList.add('active');
+      } else {
+        content.classList.remove('side-by-side');
+        document.getElementById('panel-' + tab)?.classList.add('active');
+      }
+      requestAnimationFrame(animateBars);
+    });
+  });
+}
+
+// ─── Bar animation trigger ───────────────────────────
+function animateBars() {
+  document.querySelectorAll('.panel.active .ytd-bar').forEach(bar => {
+    bar.classList.remove('animate');
+    // Force reflow to restart animation
+    void bar.offsetWidth;
+    bar.classList.add('animate');
+  });
+}
+
+// ─── Pill clicks ─────────────────────────────────────
+function initPillClicks() {
+  document.addEventListener('click', (e) => {
+    const pill = e.target.closest('.sector-pill.clickable');
+    if (!pill) return;
+    const filterVal = pill.dataset.filter;
+    const sel = document.getElementById('sectorFilter');
+    // Toggle: if already active, clear filter
+    if (sel.value === filterVal) { sel.value = ''; }
+    else { sel.value = filterVal; }
+    applyFilters();
+    syncPillHighlights();
+  });
+}
+
+function syncPillHighlights() {
+  const current = document.getElementById('sectorFilter')?.value || '';
+  document.querySelectorAll('.sector-pill.clickable').forEach(p => {
+    p.classList.toggle('active-filter', p.dataset.filter === current && current !== '');
+  });
+  const clearBtn = document.getElementById('clearFilter');
+  if (clearBtn) clearBtn.style.display = current ? 'inline-block' : 'none';
+}
+
+// Wire clear button
+document.getElementById('clearFilter')?.addEventListener('click', () => {
+  document.getElementById('sectorFilter').value = '';
+  applyFilters();
+  syncPillHighlights();
+});
+
+// ─── Main ────────────────────────────────────────────
+async function main() {
+  const content = document.getElementById('content');
+  const loader = document.getElementById('loader');
+
+  try {
+    let json;
+    try {
+      const resp = await fetch(API_PATH);
+      if (!resp.ok) throw new Error('API unavailable');
+      json = await resp.json();
+      if (!json.ok) throw new Error(json.error);
+    } catch {
+      const resp2 = await fetch(STATIC_PATH);
+      if (!resp2.ok) throw new Error('No data source available. Deploy to Vercel first.');
+      json = await resp2.json();
+    }
+
+    const { winners, losers, updatedAt, year, totalFetched } = json;
+    winnersData = winners; losersData = losers;
+
+    document.getElementById('updatedAt').textContent =
+      new Date(updatedAt).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:false });
+    document.getElementById('yearLabel').textContent = year;
+    document.getElementById('stockCount').textContent = totalFetched + ' / ' + (json.totalConstituents || totalFetched);
+
+    // Display SPY benchmark
+    if (json.benchmark) {
+      const bm = json.benchmark;
+      const bmEl = document.getElementById('benchmarkYtd');
+      const sign = bm.ytd >= 0 ? '+' : '';
+      bmEl.textContent = sign + bm.ytd.toFixed(1) + '% YTD';
+      bmEl.style.color = bm.ytd >= 0 ? 'var(--green-strong)' : 'var(--red-strong)';
+    }
+
+    // Populate sector dropdown with two-level hierarchy
+    const sectorSubs = {};
+    [...winners, ...losers].forEach(s => {
+      if (!s.sector) return;
+      if (!sectorSubs[s.sector]) sectorSubs[s.sector] = new Set();
+      if (s.subIndustry) sectorSubs[s.sector].add(s.subIndustry);
+    });
+    const sel = document.getElementById('sectorFilter');
+    Object.keys(sectorSubs).sort().forEach(sec => {
+      const og = document.createElement('optgroup');
+      og.label = sec;
+      const allOpt = document.createElement('option');
+      allOpt.value = 'sector:' + sec;
+      allOpt.textContent = 'All ' + shortSector(sec);
+      og.appendChild(allOpt);
+      [...sectorSubs[sec]].sort().forEach(sub => {
+        const o = document.createElement('option');
+        o.value = 'sub:' + sub;
+        o.textContent = shortSub(sub);
+        og.appendChild(o);
+      });
+      sel.appendChild(og);
+    });
+
+    loader.remove();
+
+    const pWin = document.createElement('div');
+    pWin.id = 'panel-winners'; pWin.className = 'panel active';
+    pWin.innerHTML = buildTable(winners, 'winners');
+    content.appendChild(pWin);
+
+    const pLose = document.createElement('div');
+    pLose.id = 'panel-losers'; pLose.className = 'panel';
+    pLose.innerHTML = buildTable(losers, 'losers');
+    content.appendChild(pLose);
+
+    attachSort('panel-winners', 'winners');
+    attachSort('panel-losers', 'losers');
+    initTabs();
+    initScrollHints();
+    initPillClicks();
+    requestAnimationFrame(animateBars);
+
+    document.getElementById('searchBox')?.addEventListener('input', applyFilters);
+    document.getElementById('sectorFilter')?.addEventListener('change', () => { applyFilters(); syncPillHighlights(); });
+  } catch (err) {
+    loader.innerHTML = `<div style="padding:40px;text-align:center;color:var(--red-strong);font-size:13px"><div style="font-size:16px;margin-bottom:8px">⚠</div>${err.message}</div>`;
+  }
+}
+
+// ─── CSV Export with dated filename ──────────────────
+document.getElementById('btn-export')?.addEventListener('click', () => {
+  const activeTable = document.querySelector('.panel.active table');
+  if (!activeTable) return alert('Select a tab first.');
+  const csv = [];
+  activeTable.querySelectorAll('tr:not(.hidden)').forEach(row => {
+    const rd = [];
+    row.querySelectorAll('th, td').forEach(col => rd.push('"' + col.innerText.replace(/"/g,'""').trim() + '"'));
+    csv.push(rd.join(','));
+  });
+  const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
+  const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `sp500_performers_${dateStr}.csv`; a.click();
+  URL.revokeObjectURL(url);
+});
+
+main();
+
+// ─── Keyboard shortcut: / to focus search ────────────
+document.addEventListener('keydown', (e) => {
+  const sb = document.getElementById('searchBox');
+  if (e.key === '/' && document.activeElement !== sb) { e.preventDefault(); sb.focus(); }
+  if (e.key === 'Escape' && document.activeElement === sb) { sb.blur(); sb.value = ''; applyFilters(); }
+});
+</script>
+</body>
+</html>
